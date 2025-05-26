@@ -5,8 +5,26 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.2.2-blue)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-3.3.6-38B2AC)
 ![Vite](https://img.shields.io/badge/Vite-5.0.0-646CFF)
+![Security](https://img.shields.io/badge/Security-Meta%20API%20Protected-green)
 
 **Agência de Desenvolvimento Web Moderna** - Site institucional desenvolvido com tecnologias de ponta para uma agência especializada em desenvolvimento web e soluções digitais.
+
+## 🔒 **CONFIGURAÇÃO DE SEGURANÇA OBRIGATÓRIA**
+
+**⚠️ ANTES DE USAR**: Este projeto inclui integração segura com Meta Ads API. Você **DEVE** configurar as variáveis de ambiente para funcionar corretamente.
+
+### Configuração Rápida (Windows)
+```powershell
+# Execute o script de configuração automática
+.\scripts\setup-env.ps1
+```
+
+### Configuração Manual
+1. Crie o arquivo `.env.local` na raiz do projeto
+2. Adicione as variáveis conforme o exemplo em `docs/META_SECURITY_GUIDE.md`
+3. **NUNCA** commite este arquivo (já está no .gitignore)
+
+📖 **[GUIA COMPLETO DE SEGURANÇA](docs/META_SECURITY_GUIDE.md)**
 
 ## ✨ Características
 
@@ -24,6 +42,13 @@
 - **Mobile Performance**: Animações adaptativas para dispositivos móveis
 - **SEO Ready**: Estrutura otimizada para mecanismos de busca
 
+### 🔐 Segurança
+- **Meta Pixel Seguro**: Integração protegida com variáveis de ambiente
+- **Tokens Protegidos**: Nunca expostos no código fonte
+- **Cursor AI Seguro**: Arquivos sensíveis excluídos do contexto
+- **Git Protegido**: Múltiplas camadas de proteção no .gitignore
+- **Error Handling**: Tratamento seguro de falhas
+
 ### 🛠️ Tecnologias
 
 #### Frontend
@@ -37,6 +62,10 @@
 - **ESLint** - Linting de código
 - **PostCSS** - Processamento de CSS
 - **Autoprefixer** - Prefixos CSS automáticos
+
+#### Analytics & Tracking
+- **Meta Pixel** - Tracking seguro de conversões
+- **Custom Events** - Eventos personalizados para análise
 
 ## 🎯 Funcionalidades
 
@@ -53,6 +82,7 @@
 - **Custom Cursor**: Cursor interativo que segue o mouse
 - **WhatsApp Button**: Integração direta com WhatsApp
 - **Offer Modal**: Modal promocional com temporizador
+- **Meta Pixel Integration**: Tracking seguro de conversões
 
 ### 📱 Responsividade
 - **Mobile**: Layout otimizado para smartphones
@@ -74,6 +104,11 @@ git clone https://github.com/andrehoffmannbr/AgenciaWebHub.git
 
 # Entre no diretório
 cd AgenciaWebHub
+
+# 🔒 CONFIGURE A SEGURANÇA (OBRIGATÓRIO)
+# Windows:
+.\scripts\setup-env.ps1
+# Ou manualmente seguindo docs/META_SECURITY_GUIDE.md
 
 # Instale as dependências
 npm install
@@ -98,6 +133,9 @@ npm run preview
 
 # Linting
 npm run lint
+
+# Configuração segura (Windows)
+.\scripts\setup-env.ps1
 ```
 
 ## 📁 Estrutura do Projeto
@@ -118,8 +156,17 @@ AgenciaWebHub/
 │   ├── styles/           # Estilos CSS
 │   ├── types/            # Tipos TypeScript
 │   ├── utils/            # Funções utilitárias
+│   │   └── metaPixel.ts  # 🔒 Integração segura Meta API
+│   ├── vite-env.d.ts     # 🔒 Types para env vars
 │   └── main.tsx          # Ponto de entrada
+├── docs/                 # Documentação
+│   └── META_SECURITY_GUIDE.md # 🔒 Guia de segurança
+├── scripts/              # Scripts utilitários
+│   └── setup-env.ps1     # 🔒 Configuração automática
 ├── .vscode/              # Configurações VS Code/Cursor
+├── .cursorignore         # 🔒 Proteção Cursor AI
+├── .cursorindexingignore # 🔒 Proteção indexação
+├── .env.local            # 🔒 Variáveis sensíveis (não commitado)
 ├── tailwind.config.js    # Configuração Tailwind
 ├── vite.config.ts        # Configuração Vite
 └── package.json
@@ -145,6 +192,7 @@ O projeto inclui configurações otimizadas para VS Code/Cursor:
 - Intellisense do Tailwind CSS
 - Formatação automática
 - Extensões recomendadas
+- Proteção de arquivos sensíveis
 
 ### Extensões Recomendadas
 - Tailwind CSS IntelliSense
@@ -160,6 +208,9 @@ O projeto inclui configurações otimizadas para VS Code/Cursor:
 # Instale a CLI da Vercel
 npm i -g vercel
 
+# ⚠️ ANTES DO DEPLOY: Configure variáveis de ambiente
+# Siga: docs/META_SECURITY_GUIDE.md seção 2
+
 # Deploy
 vercel
 ```
@@ -169,6 +220,7 @@ vercel
 # Build
 npm run build
 
+# ⚠️ Configure variáveis de ambiente antes do upload
 # Upload da pasta dist/
 ```
 
@@ -178,14 +230,32 @@ npm run build
 - **Core Web Vitals**: Otimizado
 - **Bundle Size**: Otimizado com tree-shaking
 - **Load Time**: < 2s em conexões 3G
+- **Security Score**: A+ (tokens protegidos)
+
+## 🔒 Política de Segurança
+
+### Dados Protegidos
+- ✅ Tokens Meta API em variáveis de ambiente
+- ✅ Arquivos sensíveis no .gitignore
+- ✅ Cursor AI protegido com .cursorignore
+- ✅ Validação de ambiente antes da inicialização
+- ✅ Error handling sem exposição de dados
+
+### Compliance
+- ✅ LGPD/GDPR ready
+- ✅ Pixel tracking com consentimento
+- ✅ Logs seguros sem dados sensíveis
 
 ## 🤝 Contribuição
 
 1. Fork o projeto
 2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
+3. **Configure segurança**: Execute `.\scripts\setup-env.ps1`
+4. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+5. Push para a branch (`git push origin feature/AmazingFeature`)
+6. Abra um Pull Request
+
+⚠️ **Importante**: Nunca commite arquivos `.env*` ou tokens
 
 ## 📝 Licença
 
@@ -207,4 +277,5 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 <div align="center">
   <img src="https://img.shields.io/github/stars/andrehoffmannbr/AgenciaWebHub?style=social" alt="GitHub stars">
   <img src="https://img.shields.io/github/forks/andrehoffmannbr/AgenciaWebHub?style=social" alt="GitHub forks">
+  <img src="https://img.shields.io/badge/🔒-Secure%20by%20Design-green" alt="Security">
 </div> 

@@ -1,5 +1,5 @@
-import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Mail, 
   Phone, 
@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { faqs } from '../utils/data';
 import type { ContactForm } from '../types';
+import { useMetaPixel } from '../utils/metaPixel';
 
 export const Contact = () => {
   const [formData, setFormData] = useState<ContactForm>({
@@ -25,6 +26,9 @@ export const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [openFaq, setOpenFaq] = useState<string | null>(null);
+
+  // Meta Pixel hooks
+  const { trackLead, trackContact } = useMetaPixel();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -53,6 +57,18 @@ export const Contact = () => {
       if (response.ok) {
         setSubmitStatus('success');
         setFormData({ name: '', email: '', company: '', message: '' });
+        
+        // 🔒 TRACKING SEGURO DE CONVERSÃO
+        trackLead({
+          content_name: 'Contact Form',
+          content_category: 'Lead Generation',
+          value: 0,
+          currency: 'BRL'
+        });
+        
+        trackContact();
+        
+        console.log('📊 Conversão registrada: Lead de contato');
       } else {
         setSubmitStatus('error');
       }

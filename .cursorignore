@@ -1,0 +1,43 @@
+# 🔒 ARQUIVOS SENSÍVEIS - EXCLUIR DO CURSOR AI
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.staging
+
+# Tokens e Secrets
+*.key
+*.pem
+*.p12
+secrets/
+.secrets/
+
+# Credenciais
+credentials.json
+config/production.json
+config/staging.json
+
+# Logs sensíveis
+*.log
+logs/
+
+# Configurações privadas
+.aws/
+.gcp/
+.azure/
+
+# Dados temporários
+temp/
+tmp/
+.temp/
+.tmp/
+
+# Arquivos de backup
+*.bak
+*.backup
+
+# Certificados
+*.crt
+*.cert
+*.certificate 

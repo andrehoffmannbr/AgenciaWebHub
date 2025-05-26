@@ -1,0 +1,14 @@
+# 🚫 EXCLUSÃO DE INDEXAÇÃO DO CURSOR AI
+.env*
+*.key
+*.pem
+secrets/
+.secrets/
+credentials.json
+*.log
+logs/
+.aws/
+.gcp/
+.azure/
+config/production.json
+config/staging.json 

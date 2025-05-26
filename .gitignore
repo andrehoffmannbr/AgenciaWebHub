@@ -69,6 +69,29 @@ web_modules/
 # Yarn Integrity file
 .yarn-integrity
 
+# 🔒 SEGURANÇA: META/FACEBOOK API
+# NUNCA commitar tokens ou credenciais sensíveis
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.staging
+.env.backup
+
+# Meta API tokens e secrets
+facebook-token.txt
+meta-credentials.json
+*.token
+*.secret
+
+# Arquivos de configuração com credenciais
+config/production.json
+config/staging.json
+credentials/
+secrets/
+.secrets/
+
 # dotenv environment variable files
 .env
 .env.development.local
