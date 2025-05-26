@@ -1,0 +1,22 @@
+# Cursor AI Rules para Projeto React + Tailwind CSS
+
+## Configurações CSS
+- Sempre reconhecer @tailwind como diretiva válida
+- Ignorar warnings sobre "unknown at-rules" para @tailwind, @apply, @layer
+- Tratar arquivos .css como tailwindcss quando contêm diretivas @tailwind
+
+## Linguagens e Frameworks
+- Este projeto usa React 18 + TypeScript + Vite
+- Tailwind CSS 3.x é a framework CSS principal
+- Framer Motion para animações
+- React Router para navegação
+
+## Estrutura de Classes CSS
+- Prefira classes utilitárias do Tailwind
+- Use @apply apenas em componentes customizados
+- Mantenha consistência com o design system definido
+
+## Performance
+- Otimize para dispositivos móveis
+- Use will-change-transform para animações
+- Implemente lazy loading quando apropriado 

@@ -1,0 +1,258 @@
+/* Animações Customizadas para WebHub */
+
+/* Gradient Text Animation */
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.text-gradient-animated {
+  background: linear-gradient(45deg, #00D4FF, #39FF14, #8A2BE2, #00D4FF);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 3s ease-in-out infinite;
+}
+
+/* Floating Animation */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Pulse Glow Effect */
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(0, 212, 255, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.6), 0 0 30px rgba(0, 212, 255, 0.4);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+/* Typewriter Effect Enhancement */
+@keyframes typewriter {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes blinkCursor {
+  from, to {
+    border-color: transparent;
+  }
+  50% {
+    border-color: #00D4FF;
+  }
+}
+
+.typewriter {
+  overflow: hidden;
+  border-right: 2px solid #00D4FF;
+  white-space: nowrap;
+  animation: typewriter 3.5s steps(40, end), blinkCursor 0.75s step-end infinite;
+}
+
+/* Morphing Background */
+@keyframes morphing {
+  0%, 100% {
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  }
+  50% {
+    border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
+  }
+}
+
+.animate-morphing {
+  animation: morphing 8s ease-in-out infinite;
+}
+
+/* Stagger Animation for Cards */
+@keyframes staggerFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stagger-1 { animation: staggerFadeIn 0.6s ease-out 0.1s both; }
+.stagger-2 { animation: staggerFadeIn 0.6s ease-out 0.2s both; }
+.stagger-3 { animation: staggerFadeIn 0.6s ease-out 0.3s both; }
+.stagger-4 { animation: staggerFadeIn 0.6s ease-out 0.4s both; }
+
+/* Parallax Movement */
+@keyframes parallaxMove {
+  0% {
+    transform: translateX(-50px) translateY(-20px);
+  }
+  100% {
+    transform: translateX(50px) translateY(20px);
+  }
+}
+
+.animate-parallax {
+  animation: parallaxMove 20s ease-in-out infinite alternate;
+}
+
+/* Neon Border Effect */
+@keyframes neonBorder {
+  0%, 100% {
+    border-color: rgba(0, 212, 255, 0.5);
+    box-shadow: 0 0 5px rgba(0, 212, 255, 0.3);
+  }
+  50% {
+    border-color: rgba(57, 255, 20, 0.8);
+    box-shadow: 0 0 15px rgba(57, 255, 20, 0.5);
+  }
+}
+
+.neon-border {
+  border: 2px solid;
+  animation: neonBorder 3s ease-in-out infinite;
+}
+
+/* Scale on Scroll */
+@keyframes scaleOnScroll {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.scale-in {
+  animation: scaleOnScroll 0.8s ease-out forwards;
+}
+
+/* Liquid Button Effect */
+.liquid-button {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.liquid-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.liquid-button:hover::before {
+  left: 100%;
+}
+
+/* Particle Background */
+.particle-bg {
+  position: relative;
+  overflow: hidden;
+}
+
+.particle-bg::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(2px 2px at 20px 30px, rgba(0, 212, 255, 0.3), transparent),
+    radial-gradient(2px 2px at 40px 70px, rgba(57, 255, 20, 0.3), transparent),
+    radial-gradient(1px 1px at 90px 40px, rgba(138, 43, 226, 0.3), transparent);
+  background-repeat: repeat;
+  background-size: 100px 100px;
+  animation: particleMove 20s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes particleMove {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(-100px, -100px);
+  }
+}
+
+/* Interactive Hover Effects */
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(0, 212, 255, 0.2);
+}
+
+/* Loading Shimmer */
+@keyframes shimmer {
+  0% {
+    background-position: -468px 0;
+  }
+  100% {
+    background-position: 468px 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%);
+  background-size: 468px 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Magnetic Effect */
+.magnetic {
+  transition: transform 0.1s ease;
+}
+
+.magnetic:hover {
+  transform: scale(1.05);
+}
+
+/* Breathing Animation */
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.animate-breathe {
+  animation: breathe 4s ease-in-out infinite;
+} 
