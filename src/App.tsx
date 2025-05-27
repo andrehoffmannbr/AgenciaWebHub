@@ -20,18 +20,21 @@ import { Contact } from './pages/Contact';
 import { useMetaPixel } from './utils/metaPixel';
 
 // Component para tracking de páginas
-function PageTracker() {
+function PageTracker({ pixelReady }: { pixelReady: boolean }) {
   const location = useLocation();
   const { trackViewContent } = useMetaPixel();
 
   useEffect(() => {
+    // ✅ SÓ TRACKA SE PIXEL ESTIVER PRONTO
+    if (!pixelReady) return;
+    
     // Track page views quando a rota muda
     const pageTitle = getPageTitle(location.pathname);
     trackViewContent('page', location.pathname);
     
     // Update document title
     document.title = pageTitle;
-  }, [location, trackViewContent]);
+  }, [location, trackViewContent, pixelReady]);
 
   return null;
 }
@@ -51,13 +54,18 @@ function getPageTitle(pathname: string): string {
 
 function AppContent() {
   const [isLoading, setIsLoading] = useState(true);
+  const [pixelReady, setPixelReady] = useState(false);
   const { init } = useMetaPixel();
 
   useEffect(() => {
     // Inicializar Meta Pixel apenas em produção ou quando há pixel ID
     if (import.meta.env.VITE_FACEBOOK_PIXEL_ID) {
-      init();
-      console.log('🔒 Meta Pixel configurado com segurança');
+      // ✅ AGUARDAR INICIALIZAÇÃO COMPLETA
+      setTimeout(() => {
+        init();
+        console.log('🔒 Meta Pixel configurado com segurança');
+        setPixelReady(true); // ✅ MARCAR COMO PRONTO
+      }, 100); // Pequeno delay para garantir DOM pronto
     }
 
     // Simular carregamento inicial
@@ -77,8 +85,8 @@ function AppContent() {
       {/* Custom Cursor */}
       <CustomCursor />
 
-      {/* Page Tracker para Meta Pixel */}
-      <PageTracker />
+      {/* ✅ Page Tracker só ativo quando pixel pronto */}
+      <PageTracker pixelReady={pixelReady} />
 
       {/* Loading Screen */}
       <AnimatePresence mode="wait">

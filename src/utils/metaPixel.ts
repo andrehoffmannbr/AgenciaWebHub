@@ -13,6 +13,7 @@ interface MetaPixelConfig {
 class MetaPixelService {
   private pixelId: string;
   private isInitialized: boolean = false;
+  private isLoading: boolean = false;
 
   constructor(config: MetaPixelConfig) {
     this.pixelId = config.pixelId;
@@ -20,9 +21,11 @@ class MetaPixelService {
 
   // Inicializar Meta Pixel
   init(): void {
-    if (this.isInitialized || !this.pixelId) {
+    if (this.isInitialized || this.isLoading || !this.pixelId) {
       return;
     }
+
+    this.isLoading = true;
 
     try {
       // Meta Pixel Code
@@ -49,20 +52,45 @@ class MetaPixelService {
         'https://connect.facebook.net/en_US/fbevents.js'
       );
 
-      window.fbq('init', this.pixelId);
-      window.fbq('track', 'PageView');
+      // ✅ AGUARDAR SCRIPT CARREGAR ANTES DE INICIALIZAR
+      const checkFbq = () => {
+        if (window.fbq && typeof window.fbq === 'function') {
+          window.fbq('init', this.pixelId);
+          window.fbq('track', 'PageView');
+          
+          this.isInitialized = true;
+          this.isLoading = false;
+          console.log('✅ Meta Pixel inicializado com sucesso');
+        } else {
+          // ✅ RETRY SE NÃO CARREGOU
+          setTimeout(checkFbq, 100);
+        }
+      };
 
-      this.isInitialized = true;
-      console.log('✅ Meta Pixel inicializado com sucesso');
+      // ✅ INICIAR VERIFICAÇÃO
+      setTimeout(checkFbq, 50);
+      
     } catch (error) {
       console.error('❌ Erro ao inicializar Meta Pixel:', error);
+      this.isLoading = false;
     }
   }
 
   // Tracking de eventos customizados
   trackEvent(eventName: string, parameters?: Record<string, any>): void {
     if (!this.isInitialized) {
-      console.warn('Meta Pixel não inicializado');
+      console.warn('⚠️ Meta Pixel não inicializado - aguardando...');
+      // ✅ RETRY AUTOMÁTICO
+      setTimeout(() => {
+        if (this.isInitialized) {
+          this.trackEvent(eventName, parameters);
+        }
+      }, 500);
+      return;
+    }
+
+    if (!window.fbq) {
+      console.warn('⚠️ fbq não disponível');
       return;
     }
 
@@ -76,6 +104,11 @@ class MetaPixelService {
     } catch (error) {
       console.error('❌ Erro ao trackar evento:', error);
     }
+  }
+
+  // Verificar se está pronto
+  isReady(): boolean {
+    return this.isInitialized;
   }
 
   // Eventos específicos para conversões
@@ -107,6 +140,7 @@ export const metaPixel = new MetaPixelService(metaPixelConfig);
 export const useMetaPixel = () => {
   return {
     init: () => metaPixel.init(),
+    isReady: () => metaPixel.isReady(),
     trackEvent: (eventName: string, parameters?: Record<string, any>) => 
       metaPixel.trackEvent(eventName, parameters),
     trackLead: (parameters?: Record<string, any>) => 
