@@ -129,4 +129,187 @@ console.log('ℹ️ Verifique manualmente a aba Console para erros com "Meta Pix
 
 console.log('\n🔥 === DIAGNÓSTICO RADICAL COMPLETO ===');
 console.log('💡 Cole este resultado COMPLETO no chat para análise detalhada.');
-console.log('🚨 Se ainda houver erro, o problema é mais profundo que o esperado.'); 
+console.log('🚨 Se ainda houver erro, o problema é mais profundo que o esperado.');
+
+// 🔥 INVESTIGAÇÃO ULTRA-PROFUNDA META PIXEL - ENCONTRAR TODAS AS FONTES
+
+console.log('🔥 === INVESTIGAÇÃO ULTRA-PROFUNDA META PIXEL ===');
+console.log('🎯 OBJETIVO: Encontrar TODAS as fontes de Meta Pixel conforme IA do console');
+
+// 🔍 1. VERIFICAR SCRIPTS INLINE (CÓDIGO BASE HARDCODED)
+console.log('\n🔍 1. VERIFICANDO SCRIPTS INLINE:');
+const allScripts = document.querySelectorAll('script');
+let inlinePixelCount = 0;
+allScripts.forEach((script, index) => {
+  if (script.innerHTML && script.innerHTML.includes('fbevents.js')) {
+    inlinePixelCount++;
+    console.log(`❌ SCRIPT INLINE ${inlinePixelCount} DETECTADO (posição ${index}):`);
+    console.log(`   Conteúdo: ${script.innerHTML.substring(0, 200)}...`);
+    console.log(`   Elemento completo:`, script.outerHTML);
+  }
+});
+console.log(`📊 Total de scripts inline com fbevents: ${inlinePixelCount}`);
+
+// 🔍 2. VERIFICAR SCRIPTS EXTERNOS FBEVENTS
+console.log('\n🔍 2. VERIFICANDO SCRIPTS EXTERNOS FBEVENTS:');
+const externalFbScripts = document.querySelectorAll('script[src*="fbevents"]');
+console.log(`📊 Scripts externos fbevents: ${externalFbScripts.length}`);
+externalFbScripts.forEach((script, index) => {
+  console.log(`   Script externo ${index + 1}:`);
+  console.log(`     SRC: ${script.src}`);
+  console.log(`     ID: ${script.id || 'sem ID'}`);
+  console.log(`     Async: ${script.async}`);
+  console.log(`     Elemento:`, script.outerHTML);
+});
+
+// 🔍 3. VERIFICAR MÚLTIPLAS INICIALIZAÇÕES FBQ
+console.log('\n🔍 3. VERIFICANDO INICIALIZAÇÕES FBQ:');
+if (window.fbq && window.fbq.queue) {
+  const allCalls = window.fbq.queue;
+  const initCalls = allCalls.filter(call => call[0] === 'init');
+  const trackCalls = allCalls.filter(call => call[0] === 'track');
+  const trackSingleCalls = allCalls.filter(call => call[0] === 'trackSingle');
+  
+  console.log(`📊 Total de chamadas na queue: ${allCalls.length}`);
+  console.log(`📊 Chamadas 'init': ${initCalls.length}`);
+  console.log(`📊 Chamadas 'track': ${trackCalls.length}`);
+  console.log(`📊 Chamadas 'trackSingle': ${trackSingleCalls.length}`);
+  
+  console.log('\n📋 DETALHES DAS INICIALIZAÇÕES:');
+  initCalls.forEach((call, index) => {
+    console.log(`   Init ${index + 1}: fbq('init', '${call[1]}')`);
+  });
+  
+  console.log('\n📋 TODAS AS CHAMADAS NA QUEUE:');
+  allCalls.forEach((call, index) => {
+    console.log(`   ${index + 1}: fbq('${call[0]}', ${call.slice(1).map(arg => typeof arg === 'string' ? `'${arg}'` : JSON.stringify(arg)).join(', ')})`);
+  });
+}
+
+// 🔍 4. VERIFICAR IFRAMES QUE PODEM TER PIXEL
+console.log('\n🔍 4. VERIFICANDO IFRAMES:');
+const iframes = document.querySelectorAll('iframe');
+console.log(`📊 Total de iframes: ${iframes.length}`);
+iframes.forEach((iframe, index) => {
+  console.log(`   Iframe ${index + 1}:`);
+  console.log(`     SRC: ${iframe.src || 'sem src'}`);
+  console.log(`     ID: ${iframe.id || 'sem ID'}`);
+  if (iframe.src && (iframe.src.includes('facebook') || iframe.src.includes('pixel'))) {
+    console.log(`     ❌ SUSPEITO: Iframe com Facebook/Pixel!`);
+  }
+});
+
+// 🔍 5. VERIFICAR NOSCRIPT TAGS
+console.log('\n🔍 5. VERIFICANDO NOSCRIPT TAGS:');
+const noscripts = document.querySelectorAll('noscript');
+let pixelNoscriptCount = 0;
+noscripts.forEach((noscript, index) => {
+  if (noscript.innerHTML && noscript.innerHTML.includes('facebook.com/tr')) {
+    pixelNoscriptCount++;
+    console.log(`❌ NOSCRIPT PIXEL ${pixelNoscriptCount} DETECTADO:`);
+    console.log(`   Conteúdo: ${noscript.innerHTML}`);
+  }
+});
+console.log(`📊 Total de noscript com pixel: ${pixelNoscriptCount}`);
+
+// 🔍 6. VERIFICAR SHADOW DOM
+console.log('\n🔍 6. VERIFICANDO SHADOW DOM:');
+const elementsWithShadow = document.querySelectorAll('*');
+let shadowDomCount = 0;
+elementsWithShadow.forEach(element => {
+  if (element.shadowRoot) {
+    shadowDomCount++;
+    const shadowScripts = element.shadowRoot.querySelectorAll('script[src*="fbevents"]');
+    if (shadowScripts.length > 0) {
+      console.log(`❌ PIXEL EM SHADOW DOM DETECTADO:`, element);
+      console.log(`   Scripts: ${shadowScripts.length}`);
+    }
+  }
+});
+console.log(`📊 Elementos com Shadow DOM: ${shadowDomCount}`);
+
+// 🔍 7. VERIFICAR SERVICE WORKERS
+console.log('\n🔍 7. VERIFICANDO SERVICE WORKERS:');
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(registrations => {
+    console.log(`📊 Service Workers registrados: ${registrations.length}`);
+    registrations.forEach((registration, index) => {
+      console.log(`   SW ${index + 1}: ${registration.scope}`);
+      console.log(`   Script: ${registration.active?.scriptURL || 'N/A'}`);
+    });
+  });
+}
+
+// 🔍 8. VERIFICAR MUTATION OBSERVERS (INJEÇÃO DINÂMICA)
+console.log('\n🔍 8. CONFIGURANDO DETECTOR DE INJEÇÃO DINÂMICA:');
+const observer = new MutationObserver((mutations) => {
+  mutations.forEach((mutation) => {
+    mutation.addedNodes.forEach((node) => {
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        const element = node;
+        if (element.tagName === 'SCRIPT') {
+          const script = element;
+          if (script.src && script.src.includes('fbevents')) {
+            console.log('🚨 INJEÇÃO DINÂMICA DETECTADA:');
+            console.log(`   Script: ${script.src}`);
+            console.log(`   Elemento:`, script.outerHTML);
+          }
+          if (script.innerHTML && script.innerHTML.includes('fbevents.js')) {
+            console.log('🚨 SCRIPT INLINE DINÂMICO DETECTADO:');
+            console.log(`   Conteúdo: ${script.innerHTML.substring(0, 200)}...`);
+          }
+        }
+      }
+    });
+  });
+});
+
+observer.observe(document.body, {
+  childList: true,
+  subtree: true
+});
+
+console.log('✅ Detector de injeção dinâmica ativado');
+
+// 🔍 9. VERIFICAR EXTENSÕES DO BROWSER
+console.log('\n🔍 9. VERIFICANDO POSSÍVEL INTERFERÊNCIA DE EXTENSÕES:');
+console.log('ℹ️ Extensões do browser podem injetar pixels automaticamente');
+console.log('ℹ️ Teste em modo incógnito ou com extensões desabilitadas');
+
+// 🔍 10. VERIFICAR HISTÓRICO DE PERFORMANCE
+console.log('\n🔍 10. VERIFICANDO HISTÓRICO DE CARREGAMENTOS:');
+if (window.performance && window.performance.getEntriesByType) {
+  const resourceEntries = window.performance.getEntriesByType('resource');
+  const fbeventsEntries = resourceEntries.filter(entry => entry.name.includes('fbevents'));
+  
+  console.log(`📊 Carregamentos de fbevents.js detectados: ${fbeventsEntries.length}`);
+  fbeventsEntries.forEach((entry, index) => {
+    console.log(`   Carregamento ${index + 1}:`);
+    console.log(`     URL: ${entry.name}`);
+    console.log(`     Duração: ${entry.duration}ms`);
+    console.log(`     Início: ${entry.startTime}ms`);
+  });
+}
+
+// 🚨 RESUMO CRÍTICO
+console.log('\n🚨 === RESUMO CRÍTICO ===');
+console.log(`📊 Scripts inline com fbevents: ${inlinePixelCount}`);
+console.log(`📊 Scripts externos fbevents: ${externalFbScripts.length}`);
+console.log(`📊 Noscript tags com pixel: ${pixelNoscriptCount}`);
+console.log('');
+console.log('🎯 AÇÃO NECESSÁRIA:');
+console.log('1. Se há mais de 1 script inline ou externo = REMOVER DUPLICATAS');
+console.log('2. Se há múltiplas inicializações = CONSOLIDAR EM UMA');
+console.log('3. Se há injeção dinâmica = IDENTIFICAR FONTE');
+console.log('');
+console.log('💡 Cole este resultado COMPLETO no chat para análise!');
+
+setTimeout(() => {
+  console.log('\n⏰ === ANÁLISE APÓS 5 SEGUNDOS ===');
+  console.log('Verificando se houve injeções dinâmicas...');
+  
+  const newScripts = document.querySelectorAll('script[src*="fbevents"]');
+  if (newScripts.length !== externalFbScripts.length) {
+    console.log(`🚨 INJEÇÃO DINÂMICA CONFIRMADA! Scripts aumentaram de ${externalFbScripts.length} para ${newScripts.length}`);
+  }
+}, 5000); 

@@ -1,92 +1,100 @@
-// 🎯 SOLUÇÃO DEFINITIVA META PIXEL - BASEADA NA IA DO CONSOLE
+// 🛡️ SOLUÇÃO DEFINITIVA META PIXEL - LIMPEZA + DETECÇÃO + BLOQUEIO SIMPLES
 declare global {
   interface Window {
     fbq: any;
     _fbq: any;
     __META_PIXEL_INITIALIZED__: boolean;
-    __META_PIXEL_CLEANUP_DONE__: boolean;
+    __META_PIXEL_VERIFIED_UNIQUE__: boolean;
   }
 }
 
-// 🧹 FUNÇÃO DE LIMPEZA ESPECÍFICA PARA CONFLITOS DE VERSÃO
-const performMetaPixelCleanup = (): void => {
-  console.log('🧹 === LIMPEZA ESPECÍFICA PARA CONFLITOS META PIXEL ===');
+// 🧹 FUNÇÃO DE LIMPEZA TOTAL
+const performTotalCleanup = (): void => {
+  console.log('🧹 === LIMPEZA TOTAL META PIXEL ===');
   
-  // 1. Remover scripts fbevents DUPLICADOS (manter apenas 1)
-  const existingScripts = document.querySelectorAll('script[src*="fbevents"]');
-  if (existingScripts.length > 1) {
-    console.log(`🗑️ Encontrados ${existingScripts.length} scripts fbevents - removendo duplicatas`);
-    existingScripts.forEach((script, index) => {
-      if (index > 0) { // Manter apenas o primeiro
-        const scriptElement = script as HTMLScriptElement;
-        console.log(`🗑️ Removendo script duplicado ${index + 1}:`, scriptElement.src);
-        script.remove();
-      }
-    });
-  }
+  // 1. Remover TODOS os scripts fbevents
+  const allFbScripts = document.querySelectorAll('script[src*="fbevents"], script[id*="pixel"], script[id*="facebook"]');
+  console.log(`🗑️ Encontrados ${allFbScripts.length} scripts relacionados ao Meta Pixel`);
+  allFbScripts.forEach((script, index) => {
+    console.log(`🗑️ Removendo script ${index + 1}:`, script.outerHTML.substring(0, 100));
+    script.remove();
+  });
   
-  // 2. Verificar e limpar fbq se tiver múltiplas versões
-  if (window.fbq && window.fbq.version) {
-    console.log(`📊 Versão atual do fbq: ${window.fbq.version}`);
-    
-    // Se detectar sinais de conflito de versão, resetar
-    if (window.fbq.queue && window.fbq.queue.length > 10) {
-      console.log('🗑️ Queue muito grande detectada - possível conflito - limpando');
-      window.fbq.queue = [];
+  // 2. Remover scripts inline com fbevents
+  const allScripts = document.querySelectorAll('script:not([src])');
+  let inlineRemoved = 0;
+  allScripts.forEach((script) => {
+    if (script.innerHTML && script.innerHTML.includes('fbevents.js')) {
+      console.log('🗑️ Removendo script inline com fbevents');
+      script.remove();
+      inlineRemoved++;
     }
-  }
+  });
+  console.log(`🗑️ Removidos ${inlineRemoved} scripts inline`);
   
-  window.__META_PIXEL_CLEANUP_DONE__ = true;
-  console.log('✅ Limpeza específica concluída');
-};
-
-// 🔍 FUNÇÃO DE DETECÇÃO ESPECÍFICA PARA CONFLITOS
-const detectPixelConflicts = (): boolean => {
-  console.log('🔍 === DETECÇÃO DE CONFLITOS ESPECÍFICOS ===');
+  // 3. Remover noscript do pixel
+  const noscripts = document.querySelectorAll('noscript');
+  let noscriptRemoved = 0;
+  noscripts.forEach((noscript) => {
+    if (noscript.innerHTML && noscript.innerHTML.includes('facebook.com/tr')) {
+      console.log('🗑️ Removendo noscript do pixel');
+      noscript.remove();
+      noscriptRemoved++;
+    }
+  });
+  console.log(`🗑️ Removidos ${noscriptRemoved} noscripts`);
   
-  // 1. Verificar múltiplos scripts fbevents
-  const scripts = document.querySelectorAll('script[src*="fbevents"]');
-  if (scripts.length > 1) {
-    console.log(`❌ Múltiplos scripts fbevents detectados: ${scripts.length}`);
-    return true;
-  }
-  
-  // 2. Verificar conflitos de versão no fbq
+  // 4. Limpar window.fbq completamente
   if (window.fbq) {
-    // Verificar se há múltiplas inicializações na queue
-    const initCalls = window.fbq.queue ? window.fbq.queue.filter((call: any) => call[0] === 'init') : [];
+    console.log('🗑️ Limpando window.fbq existente');
+    delete window.fbq;
+  }
+  
+  if (window._fbq) {
+    console.log('🗑️ Limpando window._fbq existente');
+    delete window._fbq;
+  }
+  
+  console.log('✅ Limpeza total concluída');
+};
+
+// 🔍 FUNÇÃO DE VERIFICAÇÃO ÚNICA
+const verifyPixelUniqueness = (): boolean => {
+  console.log('🔍 === VERIFICAÇÃO DE UNICIDADE ===');
+  
+  // 1. Verificar scripts fbevents
+  const fbScripts = document.querySelectorAll('script[src*="fbevents"]');
+  if (fbScripts.length > 1) {
+    console.log(`❌ Múltiplos scripts fbevents: ${fbScripts.length}`);
+    return false;
+  }
+  
+  // 2. Verificar inicializações múltiplas na queue
+  if (window.fbq && window.fbq.queue) {
+    const initCalls = window.fbq.queue.filter((call: any) => call[0] === 'init');
     if (initCalls.length > 1) {
-      console.log(`❌ Múltiplas inicializações detectadas: ${initCalls.length}`);
-      initCalls.forEach((call: any, index: number) => {
-        console.log(`   Init ${index + 1}: ${call[1]}`);
-      });
-      return true;
-    }
-    
-    // Verificar versão específica
-    if (window.fbq.version && window.fbq.version !== '2.0') {
-      console.log(`❌ Versão inesperada detectada: ${window.fbq.version}`);
-      return true;
+      console.log(`❌ Múltiplas inicializações na queue: ${initCalls.length}`);
+      return false;
     }
   }
   
-  console.log('✅ Nenhum conflito específico detectado');
-  return false;
+  console.log('✅ Pixel único verificado');
+  return true;
 };
 
-// 🚀 FUNÇÃO DE INJEÇÃO COM trackSingle (CONFORME SUGESTÃO DA IA)
+// 🚀 FUNÇÃO DE INJEÇÃO ÚNICA E DEFINITIVA
 export const injectMetaPixel = (): void => {
-  console.log('🚀 === INJEÇÃO META PIXEL COM trackSingle ===');
+  console.log('🚀 === INJEÇÃO ÚNICA E DEFINITIVA META PIXEL ===');
   
   // ✅ SSR check
   if (typeof window === 'undefined') {
-    console.log('🚫 SSR detectado - Meta Pixel será carregado no cliente');
+    console.log('🚫 SSR detectado');
     return;
   }
   
-  // 🛡️ Verificar flag global
+  // 🛡️ Verificar se já foi inicializado
   if (window.__META_PIXEL_INITIALIZED__) {
-    console.log('🚫 Meta Pixel já inicializado via flag global');
+    console.log('🚫 Meta Pixel já inicializado - BLOQUEANDO duplicação');
     return;
   }
   
@@ -97,33 +105,25 @@ export const injectMetaPixel = (): void => {
     return;
   }
   
-  console.log(`🎯 Pixel ID: ${pixelId}`);
+  console.log(`🎯 Inicializando Meta Pixel ÚNICO - ID: ${pixelId}`);
   
-  // 🧹 LIMPEZA ESPECÍFICA
-  if (!window.__META_PIXEL_CLEANUP_DONE__) {
-    performMetaPixelCleanup();
-  }
+  // 🧹 LIMPEZA TOTAL PRIMEIRO
+  performTotalCleanup();
   
-  // 🔍 DETECÇÃO DE CONFLITOS
-  if (detectPixelConflicts()) {
-    console.error('❌ CONFLITOS DETECTADOS - Abortando inicialização');
-    return;
-  }
-  
-  // 🛡️ DEFINIR FLAGS
+  // 🛡️ DEFINIR FLAGS IMEDIATAMENTE
   window.__META_PIXEL_INITIALIZED__ = true;
   
-  // 💉 Criar script SE NÃO EXISTIR
-  let existingScript = document.querySelector('script[src*="fbevents"]');
-  if (!existingScript) {
-    console.log('💉 Criando script Meta Pixel...');
+  // ⏰ Aguardar um momento para garantir limpeza
+  setTimeout(() => {
+    // 💉 Criar O ÚNICO script permitido
+    console.log('💉 Criando O ÚNICO script Meta Pixel...');
     
     const script = document.createElement('script');
     script.async = true;
-    script.id = 'meta-pixel';
+    script.id = 'meta-pixel-unico-definitivo';
     script.src = 'https://connect.facebook.net/en_US/fbevents.js';
     
-    // 🔧 Definir fbq ANTES do carregamento
+    // 🔧 Definir fbq ÚNICO
     window.fbq = function () {
       window.fbq.callMethod
         ? window.fbq.callMethod.apply(window.fbq, arguments)
@@ -134,39 +134,42 @@ export const injectMetaPixel = (): void => {
     window.fbq.version = '2.0';
     
     script.onload = () => {
-      console.log('✅ Script Meta Pixel carregado');
-      initializePixelWithTrackSingle(pixelId);
+      console.log('✅ Script Meta Pixel ÚNICO carregado');
+      
+      setTimeout(() => {
+        try {
+          // Verificar unicidade antes de inicializar
+          if (!verifyPixelUniqueness()) {
+            console.error('❌ Falha na verificação de unicidade - abortando');
+            return;
+          }
+          
+          console.log(`🎯 Inicializando Meta Pixel ÚNICO - ID: ${pixelId}`);
+          
+          // Usar trackSingle para máxima especificidade
+          window.fbq('init', pixelId);
+          window.fbq('trackSingle', pixelId, 'PageView');
+          
+          window.__META_PIXEL_VERIFIED_UNIQUE__ = true;
+          console.log(`✅ Meta Pixel ÚNICO inicializado COM SUCESSO - ID: ${pixelId}`);
+          
+        } catch (error) {
+          console.error('❌ Erro na inicialização única:', error);
+        }
+      }, 200);
     };
     
     script.onerror = () => {
-      console.error('❌ Erro ao carregar script Meta Pixel');
+      console.error('❌ Erro ao carregar script Meta Pixel único');
     };
     
     document.head.appendChild(script);
-  } else {
-    console.log('📊 Script Meta Pixel já existe - usando trackSingle');
-    initializePixelWithTrackSingle(pixelId);
-  }
+    console.log('📄 Script Meta Pixel ÚNICO injetado no DOM');
+    
+  }, 100); // Delay para garantir limpeza
 };
 
-// 🎯 INICIALIZAÇÃO COM trackSingle (SOLUÇÃO DA IA DO CONSOLE)
-const initializePixelWithTrackSingle = (pixelId: string): void => {
-  setTimeout(() => {
-    try {
-      console.log(`🎯 Inicializando Meta Pixel com trackSingle - ID: ${pixelId}`);
-      
-      // Usar trackSingle em vez de track genérico (CONFORME SUGESTÃO)
-      window.fbq('init', pixelId);
-      window.fbq('trackSingle', pixelId, 'PageView');
-      
-      console.log(`✅ Meta Pixel inicializado COM SUCESSO usando trackSingle - ID: ${pixelId}`);
-    } catch (error) {
-      console.error('❌ Erro na inicialização com trackSingle:', error);
-    }
-  }, 100);
-};
-
-// 🎯 TRACKING DE EVENTOS COM trackSingle (SOLUÇÃO DA IA)
+// 🎯 TRACKING COM VERIFICAÇÃO TRIPLA
 export const trackMetaEvent = (eventName: string, parameters?: Record<string, any>): void => {
   if (typeof window === 'undefined') {
     console.warn('⚠️ SSR - Meta Pixel não disponível');
@@ -183,26 +186,31 @@ export const trackMetaEvent = (eventName: string, parameters?: Record<string, an
     return;
   }
   
+  if (!window.__META_PIXEL_VERIFIED_UNIQUE__) {
+    console.warn('⚠️ Meta Pixel não foi verificado como único');
+    return;
+  }
+  
   const pixelId = import.meta.env.VITE_FACEBOOK_PIXEL_ID;
   if (!pixelId) {
-    console.error('❌ PIXEL_ID não encontrado para tracking');
+    console.error('❌ PIXEL_ID não encontrado');
     return;
   }
   
   try {
-    // USAR trackSingle EM VEZ DE track GENÉRICO (CONFORME SUGESTÃO)
+    // SEMPRE usar trackSingle para especificidade máxima
     if (parameters) {
       window.fbq('trackSingle', pixelId, eventName, parameters);
     } else {
       window.fbq('trackSingle', pixelId, eventName);
     }
-    console.log(`📊 Evento trackado com trackSingle: ${eventName}`, parameters);
+    console.log(`📊 Evento trackado via PIXEL ÚNICO VERIFICADO: ${eventName}`, parameters);
   } catch (error) {
     console.error('❌ Erro ao trackar evento:', error);
   }
 };
 
-// 🎯 FUNÇÕES ESPECÍFICAS (USANDO trackSingle)
+// 🎯 FUNÇÕES ESPECÍFICAS
 export const trackLead = (parameters?: Record<string, any>): void => {
   trackMetaEvent('Lead', parameters);
 };
@@ -218,17 +226,17 @@ export const trackViewContent = (contentType: string, contentId?: string): void 
   });
 };
 
-// 🔥 FUNÇÃO DE RESET MANUAL
+// 🔥 FUNÇÃO DE RESET TOTAL
 export const resetMetaPixel = (): void => {
-  console.log('🔥 === RESET MANUAL META PIXEL ===');
+  console.log('🔥 === RESET TOTAL META PIXEL ===');
   
   window.__META_PIXEL_INITIALIZED__ = false;
-  window.__META_PIXEL_CLEANUP_DONE__ = false;
+  window.__META_PIXEL_VERIFIED_UNIQUE__ = false;
   
-  performMetaPixelCleanup();
+  performTotalCleanup();
   
   setTimeout(() => {
-    console.log('🔄 Reinicializando após reset...');
+    console.log('🔄 Reinicializando pixel único...');
     injectMetaPixel();
-  }, 500);
+  }, 1000);
 }; 
