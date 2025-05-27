@@ -10,6 +10,67 @@ interface MetaPixelConfig {
   pixelId: string;
 }
 
+// 🛡️ FUNÇÃO SEGURA PARA FBQ
+const safeFbq = (...args: any[]): void => {
+  if (typeof window !== 'undefined' && typeof window.fbq === 'function') {
+    window.fbq(...args);
+  } else {
+    console.warn('🔴 fbq ainda não está disponível. Aguardando...');
+    setTimeout(() => safeFbq(...args), 300); // Retry com backoff
+  }
+};
+
+// 🔄 DETECTOR DE CARREGAMENTO REAL DO SCRIPT
+const waitForFbq = (): Promise<void> => {
+  return new Promise((resolve) => {
+    const check = () => {
+      if (typeof window !== 'undefined' && typeof window.fbq === 'function') {
+        console.log('✅ window.fbq detectado - Pixel pronto para uso');
+        resolve();
+      } else {
+        setTimeout(check, 100); // Polling até estar disponível
+      }
+    };
+    check();
+  });
+};
+
+// 💉 INJEÇÃO CONTROLADA DO SCRIPT DO PIXEL
+const injectPixelScript = (pixelId: string): void => {
+  if (document.getElementById('meta-pixel-script')) return;
+  
+  // Criar elementos fbq antes do script
+  if (!window.fbq) {
+    window.fbq = function() {
+      window.fbq.callMethod ?
+        window.fbq.callMethod.apply(window.fbq, arguments) : window.fbq.queue.push(arguments);
+    };
+    window.fbq.push = window.fbq;
+    window.fbq.loaded = true;
+    window.fbq.version = '2.0';
+    window.fbq.queue = [];
+  }
+
+  // Criar e carregar script
+  const script = document.createElement('script');
+  script.async = true;
+  script.id = 'meta-pixel-script';
+  script.src = 'https://connect.facebook.net/en_US/fbevents.js';
+  
+  // 🎯 ONLOAD GARANTIA TOTAL
+  script.onload = () => {
+    console.log('📦 Script fbevents.js carregado com sucesso');
+    safeFbq('init', pixelId);
+    safeFbq('track', 'PageView');
+  };
+  
+  script.onerror = () => {
+    console.error('❌ Erro ao carregar script fbevents.js');
+  };
+  
+  document.head.appendChild(script);
+};
+
 class MetaPixelService {
   private pixelId: string;
   private isInitialized: boolean = false;
@@ -19,56 +80,25 @@ class MetaPixelService {
     this.pixelId = config.pixelId;
   }
 
-  // Inicializar Meta Pixel
-  init(): void {
+  // 🚀 INICIALIZAÇÃO ROBUSTA
+  async init(): Promise<void> {
     if (this.isInitialized || this.isLoading || !this.pixelId) {
       return;
     }
 
     this.isLoading = true;
+    console.log('🔄 Iniciando carregamento do Meta Pixel...');
 
     try {
-      // Meta Pixel Code
-      (function(f: any, b: any, e: any, v: any) {
-        let n: any, t: any, s: any;
-        if (f.fbq) return;
-        n = f.fbq = function() {
-          n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
-        };
-        if (!f._fbq) f._fbq = n;
-        n.push = n;
-        n.loaded = !0;
-        n.version = '2.0';
-        n.queue = [];
-        t = b.createElement(e);
-        t.async = !0;
-        t.src = v;
-        s = b.getElementsByTagName(e)[0];
-        s.parentNode.insertBefore(t, s);
-      })(
-        window,
-        document,
-        'script',
-        'https://connect.facebook.net/en_US/fbevents.js'
-      );
-
-      // ✅ AGUARDAR SCRIPT CARREGAR ANTES DE INICIALIZAR
-      const checkFbq = () => {
-        if (window.fbq && typeof window.fbq === 'function') {
-          window.fbq('init', this.pixelId);
-          window.fbq('track', 'PageView');
-          
-          this.isInitialized = true;
-          this.isLoading = false;
-          console.log('✅ Meta Pixel inicializado com sucesso');
-        } else {
-          // ✅ RETRY SE NÃO CARREGOU
-          setTimeout(checkFbq, 100);
-        }
-      };
-
-      // ✅ INICIAR VERIFICAÇÃO
-      setTimeout(checkFbq, 50);
+      // 💉 INJETAR SCRIPT DE FORMA CONTROLADA
+      injectPixelScript(this.pixelId);
+      
+      // 🔄 AGUARDAR FBQ ESTAR REALMENTE DISPONÍVEL
+      await waitForFbq();
+      
+      this.isInitialized = true;
+      this.isLoading = false;
+      console.log('✅ Meta Pixel inicializado com sucesso');
       
     } catch (error) {
       console.error('❌ Erro ao inicializar Meta Pixel:', error);
@@ -76,11 +106,11 @@ class MetaPixelService {
     }
   }
 
-  // Tracking de eventos customizados
+  // 🛡️ TRACKING SEGURO
   trackEvent(eventName: string, parameters?: Record<string, any>): void {
     if (!this.isInitialized) {
       console.warn('⚠️ Meta Pixel não inicializado - aguardando...');
-      // ✅ RETRY AUTOMÁTICO
+      // 🔄 RETRY INTELIGENTE
       setTimeout(() => {
         if (this.isInitialized) {
           this.trackEvent(eventName, parameters);
@@ -89,16 +119,11 @@ class MetaPixelService {
       return;
     }
 
-    if (!window.fbq) {
-      console.warn('⚠️ fbq não disponível');
-      return;
-    }
-
     try {
       if (parameters) {
-        window.fbq('track', eventName, parameters);
+        safeFbq('track', eventName, parameters);
       } else {
-        window.fbq('track', eventName);
+        safeFbq('track', eventName);
       }
       console.log(`📊 Evento trackado: ${eventName}`, parameters);
     } catch (error) {
@@ -106,12 +131,12 @@ class MetaPixelService {
     }
   }
 
-  // Verificar se está pronto
+  // ✅ VERIFICAÇÃO REAL DE DISPONIBILIDADE
   isReady(): boolean {
-    return this.isInitialized;
+    return this.isInitialized && typeof window !== 'undefined' && typeof window.fbq === 'function';
   }
 
-  // Eventos específicos para conversões
+  // 🎯 EVENTOS ESPECÍFICOS PARA CONVERSÕES
   trackLead(parameters?: Record<string, any>): void {
     this.trackEvent('Lead', parameters);
   }

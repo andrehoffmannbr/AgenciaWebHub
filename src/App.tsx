@@ -22,11 +22,14 @@ import { useMetaPixel } from './utils/metaPixel';
 // Component para tracking de páginas
 function PageTracker({ pixelReady }: { pixelReady: boolean }) {
   const location = useLocation();
-  const { trackViewContent } = useMetaPixel();
+  const { trackViewContent, isReady } = useMetaPixel();
 
   useEffect(() => {
-    // ✅ SÓ TRACKA SE PIXEL ESTIVER PRONTO
-    if (!pixelReady) return;
+    // ✅ DUPLA VERIFICAÇÃO: pixelReady E isReady()
+    if (!pixelReady || !isReady()) {
+      console.log('🔄 Aguardando pixel estar completamente pronto...');
+      return;
+    }
     
     // Track page views quando a rota muda
     const pageTitle = getPageTitle(location.pathname);
@@ -34,7 +37,7 @@ function PageTracker({ pixelReady }: { pixelReady: boolean }) {
     
     // Update document title
     document.title = pageTitle;
-  }, [location, trackViewContent, pixelReady]);
+  }, [location, trackViewContent, pixelReady, isReady]);
 
   return null;
 }
@@ -55,18 +58,38 @@ function getPageTitle(pathname: string): string {
 function AppContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [pixelReady, setPixelReady] = useState(false);
-  const { init } = useMetaPixel();
+  const { init, isReady } = useMetaPixel();
 
   useEffect(() => {
-    // Inicializar Meta Pixel apenas em produção ou quando há pixel ID
-    if (import.meta.env.VITE_FACEBOOK_PIXEL_ID) {
-      // ✅ AGUARDAR INICIALIZAÇÃO COMPLETA
-      setTimeout(() => {
-        init();
-        console.log('🔒 Meta Pixel configurado com segurança');
-        setPixelReady(true); // ✅ MARCAR COMO PRONTO
-      }, 100); // Pequeno delay para garantir DOM pronto
-    }
+    // 🚀 INICIALIZAÇÃO ASYNC ROBUSTA
+    const initializePixel = async () => {
+      if (import.meta.env.VITE_FACEBOOK_PIXEL_ID) {
+        console.log('🔄 Iniciando inicialização do Meta Pixel...');
+        
+        try {
+          await init(); // Aguardar inicialização completa
+          
+          // 🔄 POLLING PARA GARANTIR QUE ESTÁ REALMENTE PRONTO
+          const checkReady = () => {
+            if (isReady()) {
+              console.log('🔒 Meta Pixel configurado com segurança');
+              setPixelReady(true);
+            } else {
+              setTimeout(checkReady, 200);
+            }
+          };
+          
+          checkReady();
+          
+        } catch (error) {
+          console.error('❌ Erro na inicialização do Meta Pixel:', error);
+        }
+      } else {
+        console.warn('⚠️ VITE_FACEBOOK_PIXEL_ID não configurado');
+      }
+    };
+
+    initializePixel();
 
     // Simular carregamento inicial
     const timer = setTimeout(() => {
@@ -74,7 +97,7 @@ function AppContent() {
     }, 3000);
 
     return () => clearTimeout(timer);
-  }, [init]);
+  }, [init, isReady]);
 
   const handleLoadingComplete = () => {
     setIsLoading(false);
@@ -85,7 +108,7 @@ function AppContent() {
       {/* Custom Cursor */}
       <CustomCursor />
 
-      {/* ✅ Page Tracker só ativo quando pixel pronto */}
+      {/* ✅ Page Tracker com dupla verificação */}
       <PageTracker pixelReady={pixelReady} />
 
       {/* Loading Screen */}
