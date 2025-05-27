@@ -55,17 +55,40 @@ if (window._fbq) {
   console.log(`📊 window._fbq:`, window._fbq);
 }
 
-// 🔍 7. Verificar TODAS as propriedades Facebook
+// 🔍 7. Verificar TODAS as propriedades Facebook (FILTRADAS)
 console.log('\n🔍 VERIFICANDO PROPRIEDADES FACEBOOK:');
-const allFbProps = Object.keys(window).filter(key => 
-  key.toLowerCase().includes('fb') || 
-  key.toLowerCase().includes('facebook') ||
-  key.toLowerCase().includes('pixel') ||
-  key.toLowerCase().includes('meta')
-);
-console.log(`📊 Propriedades Facebook encontradas: ${allFbProps.length}`);
-allFbProps.forEach(prop => {
-  console.log(`   ${prop}: ${typeof (window)[prop]}`);
+const excludedProps = [
+  'devicePixelRatio', // Propriedade nativa do browser
+  '__META_PIXEL_INITIALIZED__', // Nossa flag de controle
+  '__META_PIXEL_CLEANUP_DONE__', // Nossa flag de controle
+  'fbAsyncInit', // Pode ser legítima em alguns casos
+];
+
+const allFbProps = Object.keys(window).filter(key => {
+  const lowerKey = key.toLowerCase();
+  const isFbRelated = lowerKey.includes('fb') || 
+                     lowerKey.includes('facebook') ||
+                     lowerKey.includes('pixel') ||
+                     lowerKey.includes('meta');
+  const isExcluded = excludedProps.includes(key);
+  return isFbRelated && !isExcluded;
+});
+
+console.log(`📊 Propriedades Facebook encontradas (após filtros): ${allFbProps.length}`);
+if (allFbProps.length > 0) {
+  allFbProps.forEach(prop => {
+    console.log(`   ${prop}: ${typeof (window)[prop]}`);
+  });
+} else {
+  console.log('   ✅ Nenhuma propriedade Facebook suspeita encontrada');
+}
+
+// Mostrar propriedades excluídas (para referência)
+console.log('\n📋 PROPRIEDADES EXCLUÍDAS (LEGÍTIMAS):');
+excludedProps.forEach(prop => {
+  if (window[prop] !== undefined) {
+    console.log(`   ${prop}: ${typeof window[prop]} (legítima)`);
+  }
 });
 
 // 🔍 8. Verificar Pixel ID de Ambiente

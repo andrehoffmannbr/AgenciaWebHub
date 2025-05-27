@@ -39,20 +39,34 @@ const performMetaPixelCleanup = (): void => {
     delete window._fbq;
   }
   
-  // 5. Remover outras possíveis referências
-  const fbProperties = Object.keys(window).filter(key => key.toLowerCase().includes('fb'));
-  fbProperties.forEach(prop => {
-    if (prop !== 'fbq' && prop !== '_fbq' && typeof (window as any)[prop] !== 'function') {
-      console.log(`🗑️ Removendo propriedade suspeita: ${prop}`);
-      delete (window as any)[prop];
-    }
+  // 5. Remover outras possíveis referências (FILTRADAS)
+  const safePropsToRemove = Object.keys(window).filter(key => {
+    const lowerKey = key.toLowerCase();
+    const isFbRelated = lowerKey.includes('fb') || 
+                       lowerKey.includes('facebook') ||
+                       lowerKey.includes('pixel');
+    
+    // NUNCA remover propriedades nativas do browser ou nossas flags
+    const neverRemove = [
+      'devicePixelRatio', // Propriedade nativa do browser
+      '__META_PIXEL_INITIALIZED__', // Nossa flag
+      '__META_PIXEL_CLEANUP_DONE__', // Nossa flag
+      'fbAsyncInit', // Pode ser legítima
+    ];
+    
+    return isFbRelated && !neverRemove.includes(key) && key !== 'fbq' && key !== '_fbq';
+  });
+  
+  safePropsToRemove.forEach(prop => {
+    console.log(`🗑️ Removendo propriedade suspeita: ${prop}`);
+    delete (window as any)[prop];
   });
   
   window.__META_PIXEL_CLEANUP_DONE__ = true;
   console.log('✅ Limpeza agressiva concluída');
 };
 
-// 🔍 FUNÇÃO DE DETECÇÃO ULTRA-ROBUSTA
+// 🔍 FUNÇÃO DE DETECÇÃO ULTRA-ROBUSTA (CORRIGIDA)
 const detectExistingPixels = (): boolean => {
   console.log('🔍 === DETECÇÃO ULTRA-ROBUSTA ===');
   
@@ -80,19 +94,32 @@ const detectExistingPixels = (): boolean => {
     return true;
   }
   
-  // 4. Verificar propriedades relacionadas ao Facebook
-  const fbProps = Object.keys(window).filter(key => 
-    key.toLowerCase().includes('fb') || 
-    key.toLowerCase().includes('facebook') ||
-    key.toLowerCase().includes('pixel')
-  );
+  // 4. Verificar propriedades relacionadas ao Facebook (FILTRADAS)
+  const excludedProps = [
+    'devicePixelRatio', // Propriedade nativa do browser
+    '__META_PIXEL_INITIALIZED__', // Nossa flag de controle
+    '__META_PIXEL_CLEANUP_DONE__', // Nossa flag de controle
+    'fbAsyncInit', // Pode ser legítima em alguns casos
+  ];
+  
+  const fbProps = Object.keys(window).filter(key => {
+    const lowerKey = key.toLowerCase();
+    const isFbRelated = lowerKey.includes('fb') || 
+                       lowerKey.includes('facebook') ||
+                       lowerKey.includes('pixel');
+    const isExcluded = excludedProps.includes(key);
+    return isFbRelated && !isExcluded;
+  });
   
   if (fbProps.length > 0) {
-    console.log('❌ Propriedades Facebook detectadas:', fbProps);
+    console.log('❌ Propriedades Facebook detectadas (após filtros):', fbProps);
+    fbProps.forEach(prop => {
+      console.log(`   ${prop}: ${typeof (window as any)[prop]}`);
+    });
     return true;
   }
   
-  console.log('✅ Nenhum pixel existente detectado');
+  console.log('✅ Nenhum pixel existente detectado (após filtros)');
   return false;
 };
 
