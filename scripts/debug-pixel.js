@@ -31,6 +31,10 @@ if (window.fbq) {
   });
 }
 
+// 🛡️ 3.5. Verificar Flag Global de Proteção
+console.log('\n🛡️ VERIFICANDO FLAG GLOBAL DE PROTEÇÃO:');
+console.log(`📊 window.__META_PIXEL_INITIALIZED__: ${!!window.__META_PIXEL_INITIALIZED__}`);
+
 // 4. Verificar Pixel ID de Ambiente
 console.log('\n4️⃣ VERIFICANDO VARIÁVEL DE AMBIENTE:');
 console.log(`📊 VITE_FACEBOOK_PIXEL_ID: ${import.meta?.env?.VITE_FACEBOOK_PIXEL_ID || 'Não encontrado'}`);
@@ -50,7 +54,16 @@ console.log(`📊 Google Tag Manager: ${!!window.gtag}`);
 console.log(`📊 Google Analytics: ${!!window.ga}`);
 console.log(`📊 window.dataLayer: ${!!window.dataLayer}`);
 
-// 7. Listar todos os scripts externos
+// 🎯 7. Detectar React StrictMode
+console.log('\n🎯 VERIFICANDO REACT STRICT MODE:');
+const reactRoot = document.querySelector('#root');
+if (reactRoot && reactRoot._reactInternalFiber) {
+  console.log('📊 React detectado - possível StrictMode ativo');
+} else {
+  console.log('📊 React root encontrado - verificar StrictMode no código');
+}
+
+// 8. Listar todos os scripts externos
 console.log('\n7️⃣ SCRIPTS EXTERNOS CARREGADOS:');
 const allScripts = document.querySelectorAll('script[src]');
 const externalScripts = Array.from(allScripts)
@@ -67,4 +80,5 @@ if (externalScripts.length === 0) {
 }
 
 console.log('\n✅ === DIAGNÓSTICO COMPLETO ===');
-console.log('💡 Cole este resultado no chat para análise detalhada.'); 
+console.log('💡 Cole este resultado no chat para análise detalhada.');
+console.log('🛡️ Se __META_PIXEL_INITIALIZED__ = true, a proteção está funcionando!'); 

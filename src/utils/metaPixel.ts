@@ -1,12 +1,13 @@
-// 🔒 SOLUÇÃO DEFINITIVA PARA META PIXEL - ANTI-DUPLICAÇÃO
+// 🔒 SOLUÇÃO DEFINITIVA PARA META PIXEL - ANTI-DUPLICAÇÃO + STRICT MODE
 declare global {
   interface Window {
     fbq: any;
     _fbq: any;
+    __META_PIXEL_INITIALIZED__: boolean; // 🛡️ FLAG GLOBAL DE PROTEÇÃO
   }
 }
 
-// 🚀 FUNÇÃO DE INJEÇÃO SEGURA - EXECUTA APENAS UMA VEZ
+// 🚀 FUNÇÃO DE INJEÇÃO SEGURA - EXECUTA APENAS UMA VEZ (MESMO COM STRICT MODE)
 export const injectMetaPixel = (): void => {
   // ✅ SSR check
   if (typeof window === 'undefined') {
@@ -14,9 +15,16 @@ export const injectMetaPixel = (): void => {
     return;
   }
 
-  // ✅ Verificar se já existe
+  // 🛡️ PROTEÇÃO MÁXIMA: Verificar flag global primeiro
+  if (window.__META_PIXEL_INITIALIZED__) {
+    console.log('🚫 Meta Pixel já inicializado via flag global - evitando duplicação');
+    return;
+  }
+
+  // ✅ Verificar se já existe (proteção secundária)
   if (window.fbq || document.getElementById('meta-pixel')) {
     console.log('🚫 Meta Pixel já carregado - evitando duplicação');
+    window.__META_PIXEL_INITIALIZED__ = true; // Definir flag mesmo se já existir
     return;
   }
 
@@ -28,6 +36,9 @@ export const injectMetaPixel = (): void => {
   }
 
   console.log('🚀 Injetando Meta Pixel - ID:', pixelId);
+
+  // 🛡️ DEFINIR FLAG GLOBAL ANTES DE QUALQUER COISA
+  window.__META_PIXEL_INITIALIZED__ = true;
 
   // 💉 Cria o script APENAS uma vez
   const script = document.createElement('script');
@@ -50,7 +61,7 @@ export const injectMetaPixel = (): void => {
   window.fbq('init', pixelId);
   window.fbq('track', 'PageView');
 
-  console.log('✅ Meta Pixel inicializado - ID:', pixelId);
+  console.log('✅ Meta Pixel inicializado com proteção StrictMode - ID:', pixelId);
 };
 
 // 🎯 FUNÇÃO SIMPLES PARA TRACKING DE EVENTOS
