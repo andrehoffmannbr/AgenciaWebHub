@@ -47,16 +47,48 @@ const waitForFbq = (): Promise<void> => {
   });
 };
 
-// 💉 INJEÇÃO CONTROLADA DO SCRIPT DO PIXEL
+// 🛡️ VERIFICAÇÃO ANTI-DUPLICAÇÃO EXTREMA
+const preventDuplication = (): boolean => {
+  // 1. Verificar se script já existe
+  if (document.getElementById('meta-pixel-script')) {
+    console.warn('🚫 PREVENÇÃO: Script Meta Pixel já existe (ID)');
+    return false;
+  }
+
+  // 2. Verificar se window.fbq já está carregado e funcional
+  if (window.fbq && window.fbq.loaded === true) {
+    console.warn('🚫 PREVENÇÃO: window.fbq já carregado (loaded=true)');
+    return false;
+  }
+
+  // 3. Verificar se há algum script fbevents.js já presente
+  const existingScripts = document.querySelectorAll('script[src*="fbevents.js"]');
+  if (existingScripts.length > 0) {
+    console.warn('🚫 PREVENÇÃO: Script fbevents.js já presente na página:', existingScripts.length);
+    return false;
+  }
+
+  // 4. Verificar se há versões conflitantes de fbq
+  if (window.fbq && typeof window.fbq.version === 'string' && window.fbq.version !== '2.0') {
+    console.warn('🚫 PREVENÇÃO: Versão conflitante de fbq detectada:', window.fbq.version);
+    return false;
+  }
+
+  console.log('✅ VERIFICAÇÃO ANTI-DUPLICAÇÃO: OK para prosseguir');
+  return true;
+};
+
+// 💉 INJEÇÃO CONTROLADA DO SCRIPT DO PIXEL COM PROTEÇÃO EXTREMA
 const injectPixelScript = (pixelId: string): void => {
   console.log('💉 Iniciando injeção do script do pixel...');
   
-  if (document.getElementById('meta-pixel-script')) {
-    console.log('⚠️ Script do pixel já existe, pulando injeção');
+  // 🛡️ VERIFICAÇÃO ANTI-DUPLICAÇÃO EXTREMA
+  if (!preventDuplication()) {
+    console.error('🚫 ABORTADO: Duplicação detectada - Meta Pixel NÃO será carregado');
     return;
   }
-  
-  // Criar elementos fbq antes do script
+
+  // Criar elementos fbq APENAS se não existir
   if (!window.fbq) {
     console.log('🔧 Criando objeto window.fbq...');
     window.fbq = function() {
@@ -68,7 +100,7 @@ const injectPixelScript = (pixelId: string): void => {
     window.fbq.version = '2.0';
     window.fbq.queue = [];
   } else {
-    console.log('✅ window.fbq já existe');
+    console.log('✅ window.fbq já existe - usando existente');
   }
 
   // Criar e carregar script
@@ -80,11 +112,20 @@ const injectPixelScript = (pixelId: string): void => {
   // 🎯 ONLOAD GARANTIA TOTAL
   script.onload = () => {
     console.log('📦 Script fbevents.js carregado com sucesso');
-    setTimeout(() => {
+    
+    // ⏰ Aguardar um frame antes de executar comandos
+    requestAnimationFrame(() => {
       console.log('🚀 Executando init e PageView...');
-      safeFbq('init', pixelId);
-      safeFbq('track', 'PageView');
-    }, 50); // Pequeno delay para garantir
+      
+      // 🔍 Verificar se o script realmente funcionou
+      if (typeof window.fbq === 'function') {
+        safeFbq('init', pixelId);
+        safeFbq('track', 'PageView');
+        console.log('✅ Init e PageView executados com sucesso');
+      } else {
+        console.error('❌ ERRO: Script carregado mas window.fbq não é função');
+      }
+    });
   };
   
   script.onerror = () => {
@@ -105,7 +146,7 @@ class MetaPixelService {
     console.log('🏗️ MetaPixelService criado com pixelId:', this.pixelId);
   }
 
-  // 🚀 INICIALIZAÇÃO ROBUSTA
+  // 🚀 INICIALIZAÇÃO ROBUSTA COM PROTEÇÃO ANTI-DUPLICAÇÃO
   async init(): Promise<void> {
     console.log('🔄 MetaPixelService.init() chamado');
     console.log('📊 Estado atual:', { 
@@ -123,7 +164,7 @@ class MetaPixelService {
     console.log('🔄 Iniciando carregamento do Meta Pixel...');
 
     try {
-      // 💉 INJETAR SCRIPT DE FORMA CONTROLADA
+      // 💉 INJETAR SCRIPT DE FORMA CONTROLADA COM PROTEÇÃO EXTREMA
       injectPixelScript(this.pixelId);
       
       // 🔄 AGUARDAR FBQ ESTAR REALMENTE DISPONÍVEL
