@@ -13,8 +13,9 @@ import {
 } from 'lucide-react';
 import { faqs } from '../utils/data';
 import type { ContactForm } from '../types';
-// 🔒 TRACKING SIMPLES E DIRETO
+// 🔒 TRACKING DUPLO: PIXEL + CONVERSIONS API
 import { trackLead, trackContact } from '../utils/metaPixel';
+import { sendLeadEvent, sendContactEvent } from '../utils/conversionsApi';
 
 export const Contact = () => {
   const [formData, setFormData] = useState<ContactForm>({
@@ -56,17 +57,32 @@ export const Contact = () => {
         setSubmitStatus('success');
         setFormData({ name: '', email: '', company: '', message: '' });
         
-        // 🔒 TRACKING SEGURO DE CONVERSÃO - FUNÇÕES SIMPLES
+        // 🔒 TRACKING DUPLO: PIXEL + CONVERSIONS API
+        // 1. Tracking via Meta Pixel (client-side)
         trackLead({
           content_name: 'Contact Form',
           content_category: 'Lead Generation',
           value: 0,
           currency: 'BRL'
         });
-        
         trackContact();
         
-        console.log('📊 Conversão registrada: Lead de contato');
+        // 2. Tracking via Conversions API (server-side)
+        const userData = {
+          email: formData.email,
+          phone: formData.company // Se company contém telefone, ajuste conforme necessário
+        };
+        
+        await sendLeadEvent(userData, {
+          content_name: 'Contact Form WebHub',
+          content_category: 'Lead Generation',
+          value: 100, // Valor estimado do lead
+          currency: 'BRL'
+        });
+        
+        await sendContactEvent(userData);
+        
+        console.log('📊 Conversão registrada via PIXEL + API: Lead de contato');
       } else {
         setSubmitStatus('error');
       }
