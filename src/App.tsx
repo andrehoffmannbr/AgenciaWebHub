@@ -9,6 +9,7 @@ import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { WhatsAppButton } from './components/WhatsAppButton';
 import { WhatsAppNotification } from './components/WhatsAppNotification';
+import { CookieConsent } from './components/CookieConsent';
 import { ScrollToTop } from './components/ScrollToTop';
 // import { BackToTop } from './components/BackToTop'; // Opcional: botão voltar ao topo
 
@@ -91,6 +92,9 @@ function AppContent() {
 
             {/* WhatsApp Notification */}
             <WhatsAppNotification />
+
+            {/* Cookie Consent */}
+            <CookieConsent />
           </>
         )}
       </AnimatePresence>

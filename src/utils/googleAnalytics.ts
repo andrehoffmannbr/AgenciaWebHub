@@ -1,4 +1,6 @@
 // 🎯 GOOGLE ANALYTICS 4 - TRACKING AVANÇADO
+import { hasConsentForAnalytics } from './cookieManager';
+
 declare global {
   interface Window {
     gtag: any;
@@ -20,6 +22,12 @@ export const trackGoogleEvent = (
   eventName: string, 
   parameters?: Record<string, any>
 ): void => {
+  // Verificar consentimento de cookies
+  if (!hasConsentForAnalytics()) {
+    console.log('🔒 Google Analytics bloqueado - sem consentimento de cookies');
+    return;
+  }
+
   if (typeof window === 'undefined' || !window.gtag) {
     console.warn('⚠️ Google Analytics não está carregado');
     return;
@@ -43,6 +51,12 @@ export const trackGooglePageView = (
   pagePath: string, 
   pageTitle?: string
 ): void => {
+  // Verificar consentimento de cookies
+  if (!hasConsentForAnalytics()) {
+    console.log('🔒 Google Analytics PageView bloqueado - sem consentimento de cookies');
+    return;
+  }
+
   if (typeof window === 'undefined' || !window.gtag) return;
 
   try {
