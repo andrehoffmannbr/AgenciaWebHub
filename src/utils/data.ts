@@ -20,7 +20,7 @@ export const services: Service[] = [
       'Compatibilidade cross-browser',
       'Código limpo e escalável'
     ],
-    price: 'A partir de R$ 997'
+    price: 'R$ 2.500,00'
   },
   {
     id: '2',
@@ -34,7 +34,7 @@ export const services: Service[] = [
       'Loading ultrarrápido',
       'Mobile-first design'
     ],
-    price: 'A partir de R$ 997'
+    price: 'R$ 1.500,00'
   },
   {
     id: '3',
@@ -48,7 +48,7 @@ export const services: Service[] = [
       'Gestão de estoque',
       'Relatórios de vendas'
     ],
-    price: 'A partir de R$ 2.500'
+    price: 'A partir de R$ 3.500,00'
   },
   {
     id: '4',
@@ -62,7 +62,7 @@ export const services: Service[] = [
       'Schema markup',
       'Monitoramento contínuo'
     ],
-    price: 'A partir de R$ 499'
+    price: 'R$ 1.500,00'
   },
   {
     id: '5',
@@ -76,7 +76,7 @@ export const services: Service[] = [
       'Monitoramento de uptime',
       'Correções de bugs'
     ],
-    price: 'A partir de R$ 300/mês'
+    price: 'Gratuito por 6 meses'
   },
   {
     id: '6',
@@ -90,7 +90,7 @@ export const services: Service[] = [
       'Testes de usabilidade',
       'Design responsivo'
     ],
-    price: 'Incluído gratuitamente*'
+    price: 'R$ 1.900,00'
   }
 ];
 
