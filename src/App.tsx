@@ -8,6 +8,8 @@ import { LoadingScreen } from './components/LoadingScreen';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { WhatsAppButton } from './components/WhatsAppButton';
+import { ScrollToTop } from './components/ScrollToTop';
+// import { BackToTop } from './components/BackToTop'; // Opcional: botão voltar ao topo
 
 // Pages
 import { Home } from './pages/Home';
@@ -95,6 +97,7 @@ function AppContent() {
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <AppContent />
     </Router>
   );
