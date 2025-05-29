@@ -18,13 +18,25 @@ import { Contact } from './pages/Contact';
 
 // 🔒 Meta Pixel Integration - SOLUÇÃO SIMPLES
 import { injectMetaPixel } from './utils/metaPixel';
+// 📊 Google Analytics Integration
+import { initGoogleAnalytics } from './utils/googleAnalytics';
+// 📊 Page Tracking Hook
+import { usePageTracking } from './hooks/usePageTracking';
 
 function AppContent() {
   const [isLoading, setIsLoading] = useState(true);
 
+  // 📊 Tracking automático de páginas
+  usePageTracking();
+
   useEffect(() => {
     // 🚀 INJETA META PIXEL APENAS UMA VEZ - SOLUÇÃO DEFINITIVA
     injectMetaPixel();
+    
+    // 📊 INICIALIZA GOOGLE ANALYTICS
+    setTimeout(() => {
+      initGoogleAnalytics();
+    }, 1000); // Aguarda 1s para garantir que o gtag carregou
 
     // Simular carregamento inicial
     const timer = setTimeout(() => {

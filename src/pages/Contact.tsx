@@ -16,6 +16,8 @@ import type { ContactForm } from '../types';
 // 🔒 TRACKING DUPLO: PIXEL + CONVERSIONS API
 import { trackLead, trackContact } from '../utils/metaPixel';
 import { sendLeadEvent, sendContactEvent } from '../utils/conversionsApi';
+// 📊 TRACKING GOOGLE ANALYTICS
+import { useGoogleAnalytics } from '../utils/googleAnalytics';
 
 export const Contact = () => {
   const [formData, setFormData] = useState<ContactForm>({
@@ -28,6 +30,9 @@ export const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [openFaq, setOpenFaq] = useState<string | null>(null);
+
+  // 📊 Google Analytics Hook
+  const { trackLead: trackGoogleLead, trackContact: trackGoogleContact } = useGoogleAnalytics();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -67,6 +72,16 @@ export const Contact = () => {
         });
         trackContact();
         
+        // 📊 TRACKING TRIPLO: GOOGLE ANALYTICS
+        // 3. Tracking via Google Analytics
+        trackGoogleLead({
+          value: 100,
+          currency: 'BRL',
+          content_name: 'Contact Form WebHub',
+          content_category: 'Lead Generation'
+        });
+        trackGoogleContact('form');
+        
         // 2. Tracking via Conversions API (server-side)
         const userData = {
           email: formData.email,
@@ -82,7 +97,7 @@ export const Contact = () => {
         
         await sendContactEvent(userData);
         
-        console.log('📊 Conversão registrada via PIXEL + API: Lead de contato');
+        console.log('📊 Conversão registrada via PIXEL + API + GA: Lead de contato');
       } else {
         setSubmitStatus('error');
       }

@@ -1,11 +1,19 @@
 import { motion } from 'framer-motion';
 import { MessageCircle } from 'lucide-react';
+import { useGoogleAnalytics } from '../utils/googleAnalytics';
 
 export const WhatsAppButton = () => {
   const whatsappNumber = "48988430812"; // Número atualizado
   const message = "Olá! Gostaria de saber mais sobre os serviços da WebHub.";
+  
+  // 📊 Google Analytics Hook
+  const { trackButtonClick, trackContact } = useGoogleAnalytics();
 
   const handleClick = () => {
+    // 📊 Tracking do clique no WhatsApp
+    trackButtonClick('WhatsApp', 'floating_button');
+    trackContact('whatsapp');
+    
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
     window.open(whatsappUrl, '_blank');
