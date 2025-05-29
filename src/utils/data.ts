@@ -99,7 +99,7 @@ export const projects: Project[] = [
     id: '1',
     title: 'TechCorp Solutions',
     description: 'Site corporativo moderno para empresa de tecnologia com foco em soluções empresariais.',
-    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=250&fit=crop&crop=center',
+    image: '/images/projects/techcorpsolutions.png',
     category: 'Corporativo',
     technologies: ['React', 'TypeScript', 'TailwindCSS', 'Framer Motion'],
     link: 'https://techcorp-demo.com'
@@ -108,7 +108,7 @@ export const projects: Project[] = [
     id: '2',
     title: 'EcoVerde Store',
     description: 'E-commerce sustentável com sistema de pagamento integrado e gestão de produtos.',
-    image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=250&fit=crop&crop=center',
+    image: '/images/projects/ecoverdestore.png',
     category: 'E-commerce',
     technologies: ['Next.js', 'Stripe', 'MongoDB', 'Node.js'],
     link: 'https://ecoverde-demo.com'
@@ -117,7 +117,7 @@ export const projects: Project[] = [
     id: '3',
     title: 'FitLife Academy',
     description: 'Landing page para academia com sistema de agendamento e planos personalizados.',
-    image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=250&fit=crop&crop=center',
+    image: '/images/projects/fitlifeacademy.png',
     category: 'Landing Page',
     technologies: ['React', 'Vite', 'Firebase', 'TailwindCSS'],
     link: 'https://fitlife-demo.com'
@@ -126,7 +126,7 @@ export const projects: Project[] = [
     id: '4',
     title: 'Gourmet Delivery',
     description: 'Aplicativo web para delivery de comida gourmet com rastreamento em tempo real.',
-    image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&h=250&fit=crop&crop=center',
+    image: '/images/projects/gourmetdelivery.png',
     category: 'Aplicativo',
     technologies: ['React Native', 'Express', 'PostgreSQL', 'Socket.io'],
     link: 'https://gourmet-demo.com'
@@ -135,7 +135,7 @@ export const projects: Project[] = [
     id: '5',
     title: 'ArtSpace Gallery',
     description: 'Portfolio digital para galeria de arte com visualização imersiva de obras.',
-    image: 'https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400&h=250&fit=crop&crop=center',
+    image: '/images/projects/artspacegallery.png',
     category: 'Portfolio',
     technologies: ['Three.js', 'React', 'GSAP', 'WebGL'],
     link: 'https://artspace-demo.com'
@@ -144,7 +144,7 @@ export const projects: Project[] = [
     id: '6',
     title: 'MediCare Plus',
     description: 'Sistema de agendamento médico com telemedicina integrada.',
-    image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=250&fit=crop&crop=center',
+    image: '/images/projects/medicareplus.png',
     category: 'Sistema',
     technologies: ['Vue.js', 'Laravel', 'MySQL', 'WebRTC'],
     link: 'https://medicare-demo.com'

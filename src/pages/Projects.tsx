@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
 import { ExternalLink, Github, Filter } from 'lucide-react';
 import { projects } from '../utils/data';
+import { OptimizedImage } from '../components/OptimizedImage';
 
 export const Projects = () => {
   const [selectedCategory, setSelectedCategory] = useState('Todos');
@@ -181,48 +182,16 @@ export const Projects = () => {
                   <div className="relative h-48 mb-6 bg-gradient-to-br from-primary-500/20 to-accent-500/20 rounded-lg overflow-hidden">
                     <div className="absolute inset-0 bg-gradient-to-t from-dark-900/80 to-transparent z-10" />
                     
-                    {/* Loading placeholder */}
-                    <div className="absolute inset-0 flex items-center justify-center bg-dark-800/50 z-5">
-                      <div className="w-8 h-8 border-2 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
-                    </div>
-                    
-                    {/* Project image */}
-                    <img
+                    {/* Project image otimizada */}
+                    <OptimizedImage
                       src={project.image}
                       alt={project.title}
-                      className="w-full h-full object-cover transition-all duration-300 relative z-10 img-loading"
-                      onLoad={(e) => {
-                        e.currentTarget.classList.remove('img-loading');
-                        e.currentTarget.classList.add('img-loaded');
-                        // Hide loading spinner
-                        const loader = e.currentTarget.parentElement?.querySelector('.w-8.h-8') as HTMLElement;
-                        if (loader?.parentElement) {
-                          loader.parentElement.classList.add('fallback-hidden');
-                        }
-                      }}
-                      onError={(e) => {
-                        // Fallback para gradiente se a imagem falhar
-                        const target = e.currentTarget;
-                        const fallback = target.nextElementSibling as HTMLElement;
-                        target.classList.add('fallback-hidden');
-                        // Hide loading spinner
-                        const loader = target.parentElement?.querySelector('.w-8.h-8') as HTMLElement;
-                        if (loader?.parentElement) {
-                          loader.parentElement.classList.add('fallback-hidden');
-                        }
-                        if (fallback) {
-                          fallback.classList.remove('hidden');
-                          fallback.classList.add('fallback-visible');
-                        }
-                      }}
+                      width={400}
+                      height={250}
+                      className="w-full h-full"
+                      priority={index < 3} // Prioridade para os primeiros 3 projetos
+                      placeholder="blur"
                     />
-                    
-                    {/* Fallback placeholder */}
-                    <div className="w-full h-full bg-gradient-to-br from-primary-500 to-accent-500 hidden items-center justify-center absolute inset-0 z-10">
-                      <span className="text-2xl font-bold text-white">
-                        {project.title.charAt(0)}
-                      </span>
-                    </div>
                     
                     {/* Overlay with links */}
                     <div className="absolute inset-0 bg-dark-900/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center space-x-4 z-20">

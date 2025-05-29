@@ -266,20 +266,20 @@ export const About = () => {
                   <img
                     src={member.image}
                     alt={member.name}
-                    className="w-full h-full rounded-full object-cover border-3 border-primary-500/30 group-hover:border-primary-500/60 transition-all duration-300"
+                    className="w-full h-full rounded-full object-cover border-3 border-primary-500/30 group-hover:border-primary-500/60 transition-all duration-300 opacity-0"
                     onLoad={(e) => {
-                      e.currentTarget.style.opacity = '1';
+                      e.currentTarget.classList.add('loaded');
                     }}
                     onError={(e) => {
                       // Fallback para avatar gerado se a imagem falhar
                       const target = e.currentTarget;
                       const fallback = target.nextElementSibling as HTMLElement;
-                      target.style.display = 'none';
+                      target.classList.add('hidden');
                       if (fallback) {
-                        fallback.style.display = 'flex';
+                        fallback.classList.remove('hidden');
+                        fallback.classList.add('flex');
                       }
                     }}
-                    style={{ opacity: 0 }}
                   />
                   <div className="w-full h-full bg-gradient-to-br from-primary-500 to-accent-500 rounded-full hidden items-center justify-center text-2xl font-bold text-white">
                     {member.name.split(' ').map(n => n[0]).join('')}

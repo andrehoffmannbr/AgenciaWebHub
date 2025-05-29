@@ -26,30 +26,73 @@
     <meta property="twitter:description" content="Transformamos ideias em sites incríveis. Especialistas em desenvolvimento web moderno." />
     <meta property="twitter:image" content="/og-image.jpg" />
     
-    <!-- Google Fonts -->
+    <!-- Preconnect para recursos externos -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://www.googletagmanager.com">
+    <link rel="preconnect" href="https://plausible.io">
     
-    <!-- Plausible Analytics -->
-    <script defer data-domain="agenciawebhub" src="https://plausible.io/js/script.hash.outbound-links.pageview-props.tagged-events.js"></script>
+    <!-- DNS Prefetch para melhor performance -->
+    <link rel="dns-prefetch" href="https://www.google-analytics.com">
+    <link rel="dns-prefetch" href="https://www.facebook.com">
+    
+    <!-- CSS Crítico para First Paint -->
+    <link rel="stylesheet" href="/src/styles/critical.css">
+    
+    <!-- Google Fonts com display=swap para evitar FOIT -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    </noscript>
+    
+    <!-- Plausible Analytics - Carregamento assíncrono -->
     <script>
+      // Carrega Plausible de forma assíncrona para não bloquear renderização
       window.plausible = window.plausible || function() {
         (window.plausible.q = window.plausible.q || []).push(arguments)
       }
+      
+      // Carrega script após DOM ready
+      document.addEventListener('DOMContentLoaded', function() {
+        const script = document.createElement('script');
+        script.defer = true;
+        script.setAttribute('data-domain', 'agenciawebhub');
+        script.src = 'https://plausible.io/js/script.hash.outbound-links.pageview-props.tagged-events.js';
+        document.head.appendChild(script);
+      });
     </script>
     
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-4DBFKKGVCB"></script>
+    <!-- Google Analytics - Carregamento assíncrono -->
     <script>
+      // Google Analytics otimizado
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
-      gtag('config', 'G-4DBFKKGVCB');
+      gtag('config', 'G-4DBFKKGVCB', {
+        page_title: document.title,
+        page_location: window.location.href
+      });
+      
+      // Carrega GA de forma assíncrona
+      (function() {
+        const ga = document.createElement('script');
+        ga.async = true;
+        ga.src = 'https://www.googletagmanager.com/gtag/js?id=G-4DBFKKGVCB';
+        const s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(ga, s);
+      })();
     </script>
+    
+    <!-- Resource Hints para melhor performance -->
+    <link rel="preload" href="/src/main.tsx" as="script">
+    <link rel="modulepreload" href="/src/main.tsx">
   </head>
   <body class="bg-dark-950 text-white">
+    <!-- Loading Screen para melhor UX -->
+    <div id="loading-screen">
+      <div class="loading-spinner"></div>
+    </div>
+    
     <!-- Meta Pixel (noscript) -->
     <noscript>
       <img height="1" width="1" style="display:none" 
@@ -58,5 +101,36 @@
     
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Script para remover loading screen -->
+    <script>
+      // Remove loading screen quando React carregar
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          const loadingScreen = document.getElementById('loading-screen');
+          if (loadingScreen) {
+            loadingScreen.style.opacity = '0';
+            loadingScreen.style.transition = 'opacity 0.3s ease-out';
+            setTimeout(function() {
+              loadingScreen.remove();
+            }, 300);
+          }
+        }, 100);
+      });
+      
+      // Fallback caso load não dispare
+      document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+          const loadingScreen = document.getElementById('loading-screen');
+          if (loadingScreen && document.querySelector('#root').children.length > 0) {
+            loadingScreen.style.opacity = '0';
+            loadingScreen.style.transition = 'opacity 0.3s ease-out';
+            setTimeout(function() {
+              loadingScreen.remove();
+            }, 300);
+          }
+        }, 2000);
+      });
+    </script>
   </body>
 </html> 

@@ -1,0 +1,27 @@
+User-agent: *
+Allow: /
+
+# Bloquear arquivos desnecessários para SEO
+Disallow: /api/
+Disallow: /*.json$
+Disallow: /*.xml$
+Disallow: /src/
+Disallow: /node_modules/
+Disallow: /.git/
+Disallow: /scripts/
+Disallow: /*_optimized.*
+Disallow: /*_*w.webp
+Disallow: /*_*w.avif
+
+# Permitir recursos importantes
+Allow: /sitemap.xml
+Allow: /*.css$
+Allow: /*.js$
+Allow: /*.webp$
+Allow: /*.avif$
+
+# Sitemap
+Sitemap: https://webhub.com.br/sitemap.xml
+
+# Crawl-delay para ser gentil com o servidor
+Crawl-delay: 1 
