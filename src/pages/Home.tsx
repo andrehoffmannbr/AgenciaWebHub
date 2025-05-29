@@ -129,7 +129,7 @@ export const Home = () => {
             className="flex flex-col sm:flex-row gap-4 justify-center mb-16"
           >
             <a
-              href="https://wa.me/48988430812"
+              href="https://wa.me/48988430812?text=Olá!%20Tenho%20interesse%20em%20criar%20meu%20site.%20Gostaria%20de%20saber%20mais%20sobre%20os%20serviços%20da%20WebHub."
               target="_blank"
               rel="noopener noreferrer"
               className="btn-primary text-lg px-8 py-4 group inline-flex items-center justify-center"
@@ -294,20 +294,21 @@ export const Home = () => {
                     <img
                       src={testimonial.image}
                       alt={testimonial.name}
-                      className="w-12 h-12 rounded-full object-cover border-2 border-primary-500/30 transition-all duration-300"
+                      className="w-12 h-12 rounded-full object-cover border-2 border-primary-500/30 transition-all duration-300 img-loading"
                       onLoad={(e) => {
-                        e.currentTarget.style.opacity = '1';
+                        e.currentTarget.classList.remove('img-loading');
+                        e.currentTarget.classList.add('img-loaded');
                       }}
                       onError={(e) => {
                         // Fallback para avatar gerado se a imagem falhar
                         const target = e.currentTarget;
                         const fallback = target.nextElementSibling as HTMLElement;
-                        target.style.display = 'none';
+                        target.classList.add('fallback-hidden');
                         if (fallback) {
-                          fallback.style.display = 'flex';
+                          fallback.classList.remove('hidden');
+                          fallback.classList.add('fallback-visible');
                         }
                       }}
-                      style={{ opacity: 0 }}
                     />
                     <div className="w-12 h-12 bg-gradient-to-r from-primary-500 to-accent-500 rounded-full hidden items-center justify-center text-white font-bold">
                       {testimonial.name.charAt(0)}
@@ -406,7 +407,7 @@ export const Home = () => {
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
-                href="https://wa.me/48988430812"
+                href="https://wa.me/48988430812?text=Olá!%20Tenho%20interesse%20em%20criar%20meu%20site.%20Gostaria%20de%20saber%20mais%20sobre%20os%20serviços%20da%20WebHub."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-primary text-lg px-8 py-4 group inline-flex items-center justify-center"
@@ -416,7 +417,7 @@ export const Home = () => {
               </a>
               
               <a
-                href="https://wa.me/48988430812"
+                href="https://wa.me/48988430812?text=Olá!%20Tenho%20interesse%20em%20criar%20meu%20site.%20Gostaria%20de%20saber%20mais%20sobre%20os%20serviços%20da%20WebHub."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-secondary text-lg px-8 py-4 inline-flex items-center justify-center"

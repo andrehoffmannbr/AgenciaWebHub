@@ -190,30 +190,31 @@ export const Projects = () => {
                     <img
                       src={project.image}
                       alt={project.title}
-                      className="w-full h-full object-cover transition-all duration-300 relative z-10"
+                      className="w-full h-full object-cover transition-all duration-300 relative z-10 img-loading"
                       onLoad={(e) => {
-                        e.currentTarget.style.opacity = '1';
+                        e.currentTarget.classList.remove('img-loading');
+                        e.currentTarget.classList.add('img-loaded');
                         // Hide loading spinner
                         const loader = e.currentTarget.parentElement?.querySelector('.w-8.h-8') as HTMLElement;
                         if (loader?.parentElement) {
-                          loader.parentElement.style.display = 'none';
+                          loader.parentElement.classList.add('fallback-hidden');
                         }
                       }}
                       onError={(e) => {
                         // Fallback para gradiente se a imagem falhar
                         const target = e.currentTarget;
                         const fallback = target.nextElementSibling as HTMLElement;
-                        target.style.display = 'none';
+                        target.classList.add('fallback-hidden');
                         // Hide loading spinner
                         const loader = target.parentElement?.querySelector('.w-8.h-8') as HTMLElement;
                         if (loader?.parentElement) {
-                          loader.parentElement.style.display = 'none';
+                          loader.parentElement.classList.add('fallback-hidden');
                         }
                         if (fallback) {
-                          fallback.style.display = 'flex';
+                          fallback.classList.remove('hidden');
+                          fallback.classList.add('fallback-visible');
                         }
                       }}
-                      style={{ opacity: 0 }}
                     />
                     
                     {/* Fallback placeholder */}
@@ -363,7 +364,9 @@ export const Projects = () => {
             </p>
             
             <motion.a
-              href="/contato"
+              href="https://wa.me/48988430812?text=Olá!%20Tenho%20interesse%20em%20criar%20meu%20site.%20Gostaria%20de%20saber%20mais%20sobre%20os%20serviços%20da%20WebHub."
+              target="_blank"
+              rel="noopener noreferrer"
               className="btn-primary inline-flex items-center justify-center group text-lg px-8 py-4"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}

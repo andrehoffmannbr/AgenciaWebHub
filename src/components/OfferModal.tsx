@@ -68,6 +68,8 @@ export const OfferModal = ({ isOpen, onClose }: OfferModalProps) => {
               {/* Close Button */}
               <button
                 onClick={onClose}
+                title="Fechar modal"
+                aria-label="Fechar modal de oferta especial"
                 className="absolute top-4 right-4 sm:top-6 sm:right-6 p-2 bg-dark-700/50 hover:bg-dark-600/50 rounded-full text-gray-400 hover:text-white transition-all duration-200 z-10"
               >
                 <X size={20} />
